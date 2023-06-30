@@ -1023,8 +1023,10 @@ static void dwc3_debugfs_create_endpoint_files(struct dwc3_ep *dep,
 void dwc3_debugfs_create_endpoint_dir(struct dwc3_ep *dep)
 {
 	struct dentry		*dir;
+	struct dentry		*root;
 
-	dir = debugfs_create_dir(dep->name, dep->dwc->root);
+	root = debugfs_lookup(dev_name(dep->dwc->dev), usb_debug_root);
+	dir = debugfs_create_dir(dep->name, root);
 	if (!dir) {
 		pr_err("%s: failed to create dir %s\n", __func__, dep->name);
 		return;
@@ -1214,7 +1216,6 @@ static const struct file_operations dwc3_gadget_int_events_fops = {
 static ssize_t dwc3_gadget_l1_store(struct file *file,
 	const char __user *ubuf, size_t count, loff_t *ppos)
 {
-#ifdef CONFIG_WT_QGKI
 	struct seq_file *s = file->private_data;
 	struct dwc3	*dwc = s->private;
 	bool		 enable_l1;
@@ -1232,7 +1233,7 @@ static ssize_t dwc3_gadget_l1_store(struct file *file,
 
 	pr_info("dwc3 gadget lpm : %s. Perform a plugout/plugin\n",
 				enable_l1 ? "enabled" : "disabled");
-#endif
+
 	return count;
 }
 
@@ -1279,8 +1280,6 @@ void dwc3_debugfs_init(struct dwc3 *dwc)
 		return;
 	}
 
-	dwc->root = root;
-
 	debugfs_create_file("regdump", 0444, root, dwc, &dwc3_regdump_fops);
 
 	debugfs_create_file("lsp_dump", S_IRUGO | S_IWUSR, root, dwc,
@@ -1311,6 +1310,6 @@ void dwc3_debugfs_init(struct dwc3 *dwc)
 
 void dwc3_debugfs_exit(struct dwc3 *dwc)
 {
-	debugfs_remove_recursive(dwc->root);
+	debugfs_remove(debugfs_lookup(dev_name(dwc->dev), usb_debug_root));
 	kfree(dwc->regset);
 }

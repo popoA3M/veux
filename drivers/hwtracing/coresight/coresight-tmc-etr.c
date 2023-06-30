@@ -275,7 +275,7 @@ void tmc_free_sg_table(struct tmc_sg_table *sg_table)
 
 long tmc_sg_get_rwp_offset(struct tmc_drvdata *drvdata)
 {
-	struct etr_buf *etr_buf = drvdata->etr_buf;
+	struct etr_buf *etr_buf = drvdata->sysfs_buf;
 	struct etr_sg_table *etr_table = etr_buf->private;
 	struct tmc_sg_table *table = etr_table->sg_table;
 	u64 rwp;
@@ -1129,9 +1129,11 @@ tmc_etr_setup_sysfs_buf(struct tmc_drvdata *drvdata)
 			&& drvdata->byte_cntr->sw_usb)
 			new_buf = tmc_alloc_etr_buf(drvdata, TMC_ETR_SW_USB_BUF_SIZE,
 					 0, cpu_to_node(0), NULL);
-		else if (drvdata->out_mode == TMC_ETR_OUT_MODE_PCIE)
+		else if (drvdata->out_mode == TMC_ETR_OUT_MODE_PCIE) {
 			new_buf = tmc_alloc_etr_buf(drvdata, TMC_ETR_PCIE_MEM_SIZE,
 					 0, cpu_to_node(0), NULL);
+			drvdata->size = TMC_ETR_PCIE_MEM_SIZE;
+		}
 		else
 			new_buf = tmc_alloc_etr_buf(drvdata, drvdata->size,
 					 0, cpu_to_node(0), NULL);

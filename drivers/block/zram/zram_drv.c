@@ -760,7 +760,7 @@ static ssize_t writeback_store(struct device *dev,
 	struct page *page;
 	ssize_t ret = len;
 	int mode, err;
-	unsigned long blk_idx = 0, wb_pages_nr = 0;
+	unsigned long blk_idx = 0;
 
 	if (writeback_parse_input(buf, &wb_max, &wb_idle_min))
 		mode = IDLE_WRITEBACK;
@@ -1178,7 +1178,7 @@ static ssize_t read_block_state(struct file *file, char __user *buf,
 			zram_test_flag(zram, index, ZRAM_HUGE) ? 'h' : '.',
 			zram_test_flag(zram, index, ZRAM_IDLE) ? 'i' : '.');
 
-		if (count < copied) {
+		if (count <= copied) {
 			zram_slot_unlock(zram, index);
 			break;
 		}

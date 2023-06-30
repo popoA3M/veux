@@ -32,6 +32,7 @@ static int vdd_corner[] = {
 	[VDD_HIGH_L1]     = RPM_SMD_REGULATOR_LEVEL_TURBO_NO_CPR,
 };
 
+
 static int vdd_gx_corner[] = {
 	0, 0,
 	RPM_SMD_REGULATOR_LEVEL_MIN_SVS, RPM_SMD_REGULATOR_LEVEL_MIN_SVS,
